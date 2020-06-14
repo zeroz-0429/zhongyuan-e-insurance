@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.ContentCategoryDao">
+
+    <sql id="ContentCategoryColumns">
+        a.ccid,
+        a.name,
+        a.parent_id,
+        a.is_parent AS isParent,
+        a.created,
+        a.updated,
+        IFNULL(b.ccid,'0') AS "parent.ccid",
+        IFNULL(b.name,'/') AS "parent.name"
+    </sql>
+
+    <sql id="ContentCategoryJoins">
+        LEFT JOIN content_category AS b ON a.parent_id = b.ccid
+    </sql>
+    <select id="selectAll" resultType="ContentCategory">
+        SELECT
+        <include refid="ContentCategoryColumns"/>
+        FROM
+        content_category AS a
+        <include refid="ContentCategoryJoins"/>
+        ORDER BY
+        a.parent_id ASC,
+        a.is_parent DESC
+    </select>
+
+    <select id="selectByPid" resultType="ContentCategory">
+        SELECT
+        <include refid="ContentCategoryColumns"/>
+        FROM
+        content_category AS a
+        <include refid="ContentCategoryJoins"/>
+        WHERE a.parent_id = #{parentId}
+    </select>
+
+    <select id="getById" resultType="ContentCategory">
+        SELECT
+        <include refid="ContentCategoryColumns"/>
+        FROM
+        content_category AS a
+        <include refid="ContentCategoryJoins"/>
+        WHERE
+        a.ccid = #{ccid}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO content_category (
+          `parent_id`,
+          `name`,
+          `is_parent`,
+          `created`,
+          `updated`
+        )
+        VALUES
+          (
+            #{parent.ccid},
+            #{name},
+            #{isParent},
+            #{created},
+            #{updated}
+          );
+    </insert>
+
+    <update id="update">
+        UPDATE
+          content_category
+        SET
+          `ccid`=#{ccid},
+          `parent_id`= #{parent.ccid},
+          `name`= #{name},
+          `is_parent`=#{isParent},
+          `created`=#{created},
+          `updated`=#{updated}
+        WHERE `ccid` = #{ccid}
+    </update>
+
+    <delete id="delete">
+        DELETE FROM content_category
+        WHERE ccid = #{ccid}
+    </delete>
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.InsuranceOrdersDao">
+    <sql id="InsuranceOrdersColumns">
+          a.ioid,
+          a.ouid,
+          a.name,
+          a.identity_card AS identityCard,
+          a.phone,
+          a.iid,
+          a.state,
+          a.created,
+          a.updated,
+          b.ouid AS "ordinaryUsers.ouid",
+          b.username AS "ordinaryUsers.username",
+          d.iid AS "insurance.iid",
+          d.price AS "insurance.price",
+          d.pictrue AS "insurance.pictrue",
+          d.name AS "insurance.name"
+    </sql>
+
+    <sql id="OrdinaryJoins">
+         LEFT JOIN ordinary_users AS b ON a.ouid = b.ouid
+    </sql>
+
+    <sql id="InsuranceJoins">
+         LEFT JOIN insurance AS d ON a.iid = d.iid
+    </sql>
+
+    <select id="getByOuId" resultType="InsuranceOrders">
+        SELECT
+        <include refid="InsuranceOrdersColumns"/>
+        FROM
+        insurance_orders AS a
+        <include refid="OrdinaryJoins"/>
+        <include refid="InsuranceJoins"/>
+        WHERE
+        a.ouid = #{ordinaryUsers.ouid}
+    </select>
+
+
+    <insert id="insertOrder">
+        INSERT INTO `insurance_orders` (
+        `ioid`,
+        `ouid`,
+        `name`,
+        `identity_card`,
+        `phone`,
+        `iid`,
+        `state`,
+        `created`,
+        `updated`
+        )
+        VALUES
+        (
+        #{ioid},
+        #{ordinaryUsers.ouid},
+        #{name},
+        #{identityCard},
+        #{phone},
+        #{insurance.iid},
+        #{state},
+        #{created},
+        #{updated}
+        );
+    </insert>
+
+</mapper>

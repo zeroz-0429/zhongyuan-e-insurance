@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.ContentDao">
+    <sql id="ContentColumns">
+          a.cid,
+          a.ccid,
+          a.title,
+          a.title_desc AS titleDesc,
+          a.pictrue,
+          a.content,
+          a.created,
+          a.updated,
+          b.ccid AS "contentCategory.ccid",
+          b.name AS "contentCategory.name"
+    </sql>
+
+    <sql id="ContentJoins">
+         LEFT JOIN content_category AS b ON a.ccid = b.ccid
+    </sql>
+    <select id="selectByCategoryId" resultType="Content">
+        SELECT
+        <include refid="ContentColumns" />
+        FROM content AS a
+        <include refid="ContentJoins" />
+        WHERE a.ccid = #{contentCategory.ccid}
+    </select>
+</mapper>

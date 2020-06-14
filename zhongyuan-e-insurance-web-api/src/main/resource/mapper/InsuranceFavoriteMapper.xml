@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.InsuranceFavoriteDao">
+    <sql id="InsuranceFavoriteColumns">
+          a.ifid,
+          a.ouid,
+          a.iid,
+          a.created,
+          a.updated,
+          b.ouid AS "ordinaryUsers.ouid",
+          b.username AS "ordinaryUsers.username",
+          d.iid AS "insurance.iid",
+          d.price AS "insurance.price",
+          d.pictrue AS "insurance.pictrue",
+          d.name AS "insurance.name"
+
+    </sql>
+
+    <sql id="OrdinaryJoins">
+         LEFT JOIN ordinary_users AS b ON a.ouid = b.ouid
+    </sql>
+
+    <sql id="InsuranceJoins">
+         LEFT JOIN insurance AS d ON a.iid = d.iid
+    </sql>
+
+    <select id="selectAll" resultType="InsuranceFavorite">
+        SELECT
+        <include refid="InsuranceFavoriteColumns"/>
+        FROM
+        insurance_favorite AS a
+        <include refid="OrdinaryJoins"/>
+        <include refid="InsuranceJoins"/>
+    </select>
+
+    <select id="getByOuId" resultType="InsuranceFavorite">
+        SELECT
+        <include refid="InsuranceFavoriteColumns"/>
+        FROM
+        insurance_favorite AS a
+        <include refid="OrdinaryJoins"/>
+        <include refid="InsuranceJoins"/>
+        WHERE
+        a.ouid = #{ordinaryUsers.ouid}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO `insurance_favorite` (
+        `ifid`,
+        `ouid`,
+        `iid`,
+        `created`,
+        `updated`
+        )
+        VALUES
+        (
+        #{ifid},
+        #{ordinaryUsers.ouid},
+        #{insurance.iid},
+        #{created},
+        #{updated}
+        );
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM insurance_favorite WHERE iid = #{iid} and ouid = #{ouid}
+    </delete>
+
+</mapper>

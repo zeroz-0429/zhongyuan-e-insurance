@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.OrdinaryUsersDao">
+    <sql id="OrdinaryUsersColumns">
+          a.ouid,
+          a.username,
+          a.password,
+          a.phone,
+          a.email,
+          a.state,
+          a.created,
+          a.updated
+    </sql>
+
+    <select id="login" resultType="OrdinaryUsers">
+        SELECT
+        <include refid="OrdinaryUsersColumns" />
+        FROM
+        ordinary_users AS a
+        WHERE username = #{username}
+        OR phone = #{username}
+        OR email = #{username}
+    </select>
+
+    <insert id="register">
+    INSERT INTO `ordinary_users` (
+    `username`,
+    `password`,
+    `phone`,
+    `email`,
+    `state`,
+    `created`,
+    `updated`
+    )
+    VALUES
+    (
+    #{username},
+    #{password},
+    #{phone},
+    #{email},
+    #{state},
+    #{created},
+    #{updated}
+    );
+    </insert>
+
+    <select id="selectAll" resultType="OrdinaryUsers">
+        SELECT
+        <include refid="OrdinaryUsersColumns"/>
+        FROM
+        ordinary_users AS a
+    </select>
+
+    <select id="getById" resultType="OrdinaryUsers">
+        SELECT
+        <include refid="OrdinaryUsersColumns"/>
+        FROM
+        ordinary_users AS a
+        WHERE
+        a.ouid = #{ouid}
+    </select>
+
+    <update id="update">
+        UPDATE
+          ordinary_users
+        SET
+          username = #{username},
+          password = #{password},
+          phone = #{phone},
+          email = #{email},
+          state = #{state},
+          updated = #{updated}
+        WHERE ouid = #{ouid};
+    </update>
+
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.OrdinaryUsersDao">
+    <sql id="OrdinaryUsersColumns">
+          a.ouid,
+          a.username,
+          a.password,
+          a.phone,
+          a.email,
+          a.state,
+          a.created,
+          a.updated
+    </sql>
+    <select id="selectAll" resultType="OrdinaryUsers">
+        SELECT
+        <include refid="OrdinaryUsersColumns"/>
+        FROM
+        ordinary_users AS a
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `ordinary_users` (
+          `username`,
+          `password`,
+          `phone`,
+          `email`,
+          `state`,
+          `created`,
+          `updated`
+        )
+        VALUES
+          (
+           #{username},
+           #{password},
+           #{phone},
+           #{email},
+           #{state},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <update id="update">
+        UPDATE
+          ordinary_users
+        SET
+          username = #{username},
+          password = #{password},
+          phone = #{phone},
+          email = #{email},
+          state = #{state},
+          updated = #{updated}
+        WHERE ouid = #{ouid};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM ordinary_users WHERE ouid = #{ouid}
+    </delete>
+
+    <delete id="deleteMulti">
+        DELETE FROM ordinary_users
+        WHERE ouid IN
+        <foreach collection="array" open="(" close=")" separator="," item="ouid">
+            #{ouid}
+        </foreach>
+    </delete>
+
+    <select id="getById" resultType="OrdinaryUsers">
+        SELECT
+        <include refid="OrdinaryUsersColumns"/>
+        FROM
+        ordinary_users AS a
+        WHERE
+        a.ouid = #{ouid}
+    </select>
+
+    <select id="page" resultType="OrdinaryUsers" parameterType="java.util.Map">
+        SELECT
+        <include refid="OrdinaryUsersColumns"/>
+        FROM
+        ordinary_users AS a
+        <where>
+            <if test="pageParams.username!=null and pageParams.username!=''">
+                AND a.username LIKE CONCAT ('%',#{pageParams.username},'%')
+            </if>
+            <if test="pageParams.phone!=null and pageParams.phone!=''">
+                AND a.phone LIKE CONCAT ('%',#{pageParams.phone},'%')
+            </if>
+            <if test="pageParams.email!=null and pageParams.email!=''">
+                AND a.email LIKE CONCAT ('%',#{pageParams.email},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM ordinary_users AS a
+        <where>
+            <if test="username!=null and username!=''">
+                AND a.username LIKE CONCAT ('%',#{username},'%')
+            </if>
+            <if test="phone!=null and phone!=''">
+                AND a.phone LIKE CONCAT ('%',#{phone},'%')
+            </if>
+            <if test="email!=null and email!=''">
+                AND a.email LIKE CONCAT ('%',#{email},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

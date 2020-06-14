@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.dao.AdminUsersDao">
+    <sql id="AdminUsersColumns">
+          a.auid,
+          a.phone,
+          a.email,
+          a.password,
+          a.state,
+          a.created,
+          a.updated
+    </sql>
+    <select id="selectAll" resultType="AdminUsers">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `admin_users` (
+          `phone`,
+          `email`,
+          `password`,
+          `state`,
+          `created`,
+          `updated`
+        )
+        VALUES
+          (
+           #{phone},
+           #{email},
+           #{password},
+           #{state},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <update id="update">
+        UPDATE
+          admin_users
+        SET
+          phone = #{phone},
+          email = #{email},
+          password = #{password},
+          state = #{state},
+          updated = #{updated}
+        WHERE auid = #{auid};
+    </update>
+
+    <select id="getById" resultType="AdminUsers">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+        WHERE
+        a.auid = #{auid}
+    </select>
+
+    <delete id="delete">
+        DELETE FROM admin_users WHERE auid = #{auid}
+    </delete>
+
+    <delete id="deleteMulti">
+        DELETE FROM admin_users
+        WHERE auid IN
+        <foreach collection="array" open="(" close=")" separator="," item="auid">
+            #{auid}
+        </foreach>
+    </delete>
+
+    <select id="page" resultType="AdminUsers" parameterType="java.util.Map">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+        <where>
+            <if test="pageParams.phone!=null and pageParams.phone!=''">
+                AND a.phone LIKE CONCAT ('%',#{pageParams.phone},'%')
+            </if>
+            <if test="pageParams.email!=null and pageParams.email!=''">
+                AND a.email LIKE CONCAT ('%',#{pageParams.email},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM admin_users AS a
+        <where>
+            <if test="phone!=null and phone!=''">
+                AND a.phone LIKE CONCAT ('%',#{phone},'%')
+            </if>
+            <if test="email!=null and email!=''">
+                AND a.email LIKE CONCAT ('%',#{email},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

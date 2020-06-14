@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.ContentDao">
+    <sql id="ContentColumns">
+          a.cid,
+          a.ccid,
+          a.title,
+          a.title_desc AS titleDesc,
+          a.pictrue,
+          a.content,
+          a.created,
+          a.updated,
+          b.ccid AS "contentCategory.ccid",
+          b.name AS "contentCategory.name"
+    </sql>
+
+    <sql id="ContentJoins">
+         LEFT JOIN content_category AS b ON a.ccid = b.ccid
+    </sql>
+    <select id="selectAll" resultType="Content">
+        SELECT
+        <include refid="ContentColumns"/>
+        FROM
+        content AS a
+        <include refid="ContentJoins"/>
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `content` (
+            `ccid`,
+            `title`,
+            `title_desc`,
+            `pictrue`,
+            `content`,
+            `created`,
+            `updated`
+        )
+        VALUES
+          (
+           #{contentCategory.ccid},
+           #{title},
+           #{titleDesc},
+           #{pictrue},
+           #{content},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM content WHERE cid = #{cid}
+    </delete>
+
+
+    <select id="getById" resultType="Content">
+        SELECT
+        <include refid="ContentColumns"/>
+        FROM
+        content AS a
+        <include refid="ContentJoins"/>
+        WHERE
+        a.cid = #{cid}
+    </select>
+
+    <update id="update">
+        UPDATE
+          content
+        SET
+           ccid=#{contentCategory.ccid},
+           title=#{title},
+           title_desc=#{titleDesc},
+           pictrue=#{pictrue},
+           content=#{content},
+           created=#{created},
+           updated=#{updated}
+        WHERE cid = #{cid};
+    </update>
+
+    <delete id="deleteMulti">
+        DELETE FROM content
+        WHERE cid IN
+        <foreach collection="array" open="(" close=")" separator="," item="cid">
+            #{cid}
+        </foreach>
+    </delete>
+
+    <select id="page" resultType="Content" parameterType="java.util.Map">
+        SELECT
+        <include refid="ContentColumns"/>
+        FROM
+        content AS a
+        <include refid="ContentJoins"/>
+        <where>
+            <if test="pageParams.title!=null and pageParams.title!=''">
+                AND a.title LIKE CONCAT ('%',#{pageParams.title},'%')
+            </if>
+            <if test="pageParams.titleDesc!=null and pageParams.titleDesc!=''">
+                AND a.title_desc LIKE CONCAT ('%',#{pageParams.titleDesc},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM content AS a
+        <where>
+            <if test="title!=null and title!=''">
+                AND a.title LIKE CONCAT ('%',#{title},'%')
+            </if>
+            <if test="titleDesc!=null and titleDesc!=''">
+                AND a.title_desc LIKE CONCAT ('%',#{titleDesc},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

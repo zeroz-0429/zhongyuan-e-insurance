@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.InsuranceCategoryDao">
+    <sql id="InsuranceCategoryColumns">
+          a.icid,
+          a.name,
+          a.description,
+          a.created,
+          a.updated
+    </sql>
+    <select id="selectAll" resultType="InsuranceCategory">
+        SELECT
+        <include refid="InsuranceCategoryColumns"/>
+        FROM
+        insurance_category AS a
+    </select>
+
+    <select id="getById" resultType="InsuranceCategory">
+        SELECT
+        <include refid="InsuranceCategoryColumns"/>
+        FROM
+        insurance_category AS a
+        WHERE
+        a.icid = #{icid}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO `insurance_category` (
+          `name`,
+          `description`,
+          `created`,
+          `updated`
+        )
+        VALUES
+          (
+           #{name},
+           #{description},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <update id="update">
+        UPDATE
+          insurance_category AS a
+        SET
+          a.name = #{name},
+          a.description = #{description},
+          a.updated = #{updated}
+        WHERE a.icid = #{icid};
+    </update>
+
+    <delete id="delete">
+        DELETE FROM insurance_category WHERE icid = #{icid}
+    </delete>
+
+    <delete id="deleteMulti">
+        DELETE FROM insurance_category
+        WHERE icid IN
+        <foreach collection="array" open="(" close=")" separator="," item="icid">
+            #{icid}
+        </foreach>
+    </delete>
+
+    <select id="page" resultType="InsuranceCategory" parameterType="java.util.Map">
+        SELECT
+        <include refid="InsuranceCategoryColumns"/>
+        FROM
+        insurance_category AS a
+        <where>
+            <if test="pageParams.icid!=null and pageParams.icid!=''">
+                AND a.icid LIKE CONCAT ('%',#{pageParams.icid},'%')
+            </if>
+            <if test="pageParams.name!=null and pageParams.name!=''">
+                AND a.name LIKE CONCAT ('%',#{pageParams.name},'%')
+            </if>
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM insurance_category AS a
+        <where>
+            <if test="icid!=null and icid!=''">
+                AND a.icid LIKE CONCAT ('%',#{icid},'%')
+            </if>
+            <if test="name!=null and name!=''">
+                AND a.name LIKE CONCAT ('%',#{name},'%')
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.InsuranceDao">
+    <sql id="InsuranceColumns">
+          a.iid,
+          a.name,
+          a.price,
+          a.bargain_price AS bargainPrice,
+          a.content,
+          a.pictrue,
+          a.is_activity AS isActivity,
+          a.state,
+          a.icid,
+          a.created,
+          a.updated,
+          b.icid AS "insuranceCategory.icid",
+          b.name AS "insuranceCategory.name"
+    </sql>
+
+    <sql id="InsuranceJoins">
+         LEFT JOIN insurance_category AS b ON a.icid = b.icid
+    </sql>
+
+    <select id="getById" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+        WHERE
+        a.iid = #{iid}
+    </select>
+
+    <select id="selectByCategoryId" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns" />
+        FROM insurance AS a
+        <include refid="InsuranceJoins" />
+        WHERE a.icid = #{insuranceCategory.icid}
+    </select>
+
+    <select id="getByName" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+        WHERE a.name LIKE CONCAT ('%',#{name},'%')
+    </select>
+
+    <select id="getByActivity" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+        WHERE
+        a.is_activity = 1
+    </select>
+
+</mapper>

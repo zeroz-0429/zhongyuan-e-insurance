@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.AdminUsersDao">
+    <sql id="AdminUsersColumns">
+          a.auid,
+          a.phone,
+          a.email,
+          a.password,
+          a.state,
+          a.created,
+          a.updated
+    </sql>
+    <select id="getByEmail" resultType="AdminUsers">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+        WHERE
+        a.email = #{email}
+    </select>
+
+    <select id="getById" resultType="AdminUsers">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+        WHERE
+        a.auid = #{auid}
+    </select>
+
+    <insert id="insert">
+        INSERT INTO `admin_users` (
+          `phone`,
+          `email`,
+          `password`,
+          `state`,
+          `created`,
+          `updated`
+        )
+        VALUES
+          (
+           #{phone},
+           #{email},
+           #{password},
+           #{state},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <update id="update">
+        UPDATE
+          admin_users
+        SET
+          phone = #{phone},
+          email = #{email},
+          password = #{password},
+          state = #{state},
+          updated = #{updated}
+        WHERE auid = #{auid};
+    </update>
+
+    <select id="selectAll" resultType="AdminUsers">
+        SELECT
+        <include refid="AdminUsersColumns"/>
+        FROM
+        admin_users AS a
+    </select>
+</mapper>

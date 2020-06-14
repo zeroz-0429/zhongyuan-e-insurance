@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.api.dao.InsuranceCategoryDao">
+    <sql id="InsuranceCategoryColumns">
+          a.icid,
+          a.name,
+          a.description,
+          a.created,
+          a.updated
+    </sql>
+    <select id="selectAll" resultType="InsuranceCategory">
+        SELECT
+        <include refid="InsuranceCategoryColumns"/>
+        FROM
+        insurance_category AS a
+    </select>
+
+</mapper>

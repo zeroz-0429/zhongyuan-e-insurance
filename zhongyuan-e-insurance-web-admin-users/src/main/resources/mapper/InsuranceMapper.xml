@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zz.zhongyuan.e.insurance.web.admin.users.dao.InsuranceDao">
+    <sql id="InsuranceColumns">
+          a.iid,
+          a.name,
+          a.price,
+          a.bargain_price AS bargainPrice,
+          a.content,
+          a.pictrue,
+          a.is_activity AS isActivity,
+          a.state,
+          a.icid,
+          a.created,
+          a.updated,
+          b.icid AS "insuranceCategory.icid",
+          b.name AS "insuranceCategory.name"
+    </sql>
+
+    <sql id="InsuranceJoins">
+         LEFT JOIN insurance_category AS b ON a.icid = b.icid
+    </sql>
+
+    <select id="selectAll" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+    </select>
+
+    <select id="selectAllPid" resultType="InsuranceCategory">
+        SELECT
+        b.icid,
+        b.name
+        FROM
+        insurance_category AS b
+    </select>
+
+    <select id="selectIcid" resultType="java.lang.Long">
+        SELECT
+        b.icid
+        FROM
+        insurance_category AS b
+        WHERE
+        b.name = #{insuranceCategory.name}
+    </select>
+
+
+    <insert id="insert">
+        INSERT INTO `insurance` (
+            `icid`,
+            `name`,
+            `price`,
+            `bargain_price`,
+            `content`,
+            `pictrue`,
+            `is_activity`,
+            `state`,
+            `created`,
+            `updated`
+        )
+        VALUES
+          (
+           #{insuranceCategory.icid},
+           #{name},
+           #{price},
+           #{bargainPrice},
+           #{content},
+           #{pictrue},
+           #{isActivity},
+           #{state},
+           #{created},
+           #{updated}
+          );
+    </insert>
+
+    <delete id="delete">
+        DELETE FROM insurance WHERE iid = #{iid}
+    </delete>
+
+    <update id="update">
+        UPDATE
+          insurance AS a
+        SET
+           a.icid=#{insuranceCategory.icid},
+           a.name=#{name},
+           a.price=#{price},
+           a.bargain_price=#{bargainPrice},
+           a.content=#{content},
+           a.pictrue=#{pictrue},
+           a.is_activity=#{isActivity},
+           a.state=#{state},
+           a.created=#{created},
+           a.updated=#{updated}
+        WHERE iid = #{iid};
+    </update>
+
+    <delete id="deleteMulti">
+        DELETE FROM insurance
+        WHERE iid IN
+        <foreach collection="array" open="(" close=")" separator="," item="iid">
+            #{iid}
+        </foreach>
+    </delete>
+
+    <select id="getById" resultType="Insurance">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+        WHERE
+        a.iid = #{iid}
+    </select>
+
+    <select id="page" resultType="Insurance" parameterType="java.util.Map">
+        SELECT
+        <include refid="InsuranceColumns"/>
+        FROM
+        insurance AS a
+        <include refid="InsuranceJoins"/>
+        <where>
+            <if test="pageParams.name!=null and pageParams.name!=''">
+                AND a.name LIKE CONCAT ('%',#{pageParams.name},'%')
+            </if>
+            <if test="pageParams.price!=null and pageParams.price!=''">
+                AND a.price LIKE CONCAT ('%',#{pageParams.price},'%')
+            </if>
+<!--            <if test="pageParams.icid!=null and pageParams.icid!=''">-->
+<!--                AND a.icid LIKE CONCAT ('%',#{pageParams.icid},'%')-->
+<!--            </if>-->
+        </where>
+        LIMIT #{start},#{length}
+    </select>
+
+    <select id="count" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM insurance AS a
+        <where>
+            <if test="name!=null and name!=''">
+                AND a.name LIKE CONCAT ('%',#{name},'%')
+            </if>
+            <if test="price!=null and price!=''">
+                AND a.price LIKE CONCAT ('%',#{price},'%')
+            </if>
+<!--            <if test="icid!=null and icid!=''">-->
+<!--                AND a.icid LIKE CONCAT ('%',#{icid},'%')-->
+<!--            </if>-->
+        </where>
+    </select>
+</mapper>
